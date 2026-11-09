@@ -26,7 +26,6 @@ import numpy as np
 import pandas as pd
 
 from lib.data_generation import get_dummy_returns_data
-
 ```
 
 ## Test viability of approach on simple data, large sample
@@ -43,9 +42,13 @@ LONG_QUEUE_TIME = 90
 
 ```python
 # Only difference between datasets is queue time, keep all else the same with large sample
-short_queue_data = get_dummy_returns_data(1000, SHORT_QUEUE_TIME, 30, 10, 15, random_seed=1)
+short_queue_data = get_dummy_returns_data(
+    1000, SHORT_QUEUE_TIME, 30, 10, 15, random_seed=1
+)
 mid_queue_data = get_dummy_returns_data(1000, MID_QUEUE_TIME, 30, 10, 15, random_seed=2)
-long_queue_data = get_dummy_returns_data(1000, LONG_QUEUE_TIME, 30, 10, 15, random_seed=3)
+long_queue_data = get_dummy_returns_data(
+    1000, LONG_QUEUE_TIME, 30, 10, 15, random_seed=3
+)
 print(f"Short queue data summary: \n{short_queue_data.describe()}")
 print(f"Mid queue data summary: \n{mid_queue_data.describe()}")
 print(f"Long queue data summary: \n{long_queue_data.describe()}")
@@ -91,13 +94,13 @@ short_queue_bins = np.arange(0, short_queue_data["ski_down_time"].max(), 1)
 mid_queue_bins = np.arange(0, mid_queue_data["ski_down_time"].max(), 1)
 long_queue_bins = np.arange(0, long_queue_data["ski_down_time"].max(), 1)
 ax1.hist(short_queue_data["ski_down_time"], bins=short_queue_bins)
-ax1.set_title('short queue data')
-ax1.tick_params(axis='x', labelbottom=True)
+ax1.set_title("short queue data")
+ax1.tick_params(axis="x", labelbottom=True)
 ax2.hist(mid_queue_data["ski_down_time"], bins=mid_queue_bins)
-ax2.set_title('mid queue data')
-ax2.tick_params(axis='x', labelbottom=True)
+ax2.set_title("mid queue data")
+ax2.tick_params(axis="x", labelbottom=True)
 ax3.hist(long_queue_data["ski_down_time"], bins=long_queue_bins)
-ax3.set_title('long queue data')
+ax3.set_title("long queue data")
 sd_fig.tight_layout()
 plt.show()
 ```
@@ -144,23 +147,40 @@ data. This is good for testing the simple case. We should be able to pick this s
 
 ```python
 def get_quantiles_df(input_df: pd.DataFrame, col_name: str) -> pd.DataFrame:
-    input_df = input_df.copy().sort_values(by=col_name,ascending=True)
+    input_df = input_df.copy().sort_values(by=col_name, ascending=True)
     quantiles = np.arange(0, 101) / 100
-    quantiles_df = input_df[col_name].quantile(quantiles).to_frame().reset_index(names='quantiles')
+    quantiles_df = (
+        input_df[col_name].quantile(quantiles).to_frame().reset_index(names="quantiles")
+    )
     return quantiles_df
 ```
 
 
 ```python
-short_queue_quantiles = get_quantiles_df(short_queue_data, 'total_return_time')
-mid_queue_quantiles = get_quantiles_df(mid_queue_data, 'total_return_time')
-long_queue_quantiles = get_quantiles_df(long_queue_data, 'total_return_time')
-plt.plot(short_queue_quantiles['total_return_time'], short_queue_quantiles['quantiles'], color='b', label='short_queue')
-plt.plot(mid_queue_quantiles['total_return_time'], mid_queue_quantiles['quantiles'], color='r', label='mid_queue')
-plt.plot(long_queue_quantiles['total_return_time'], long_queue_quantiles['quantiles'], color='k', label='long_queue')
+short_queue_quantiles = get_quantiles_df(short_queue_data, "total_return_time")
+mid_queue_quantiles = get_quantiles_df(mid_queue_data, "total_return_time")
+long_queue_quantiles = get_quantiles_df(long_queue_data, "total_return_time")
+plt.plot(
+    short_queue_quantiles["total_return_time"],
+    short_queue_quantiles["quantiles"],
+    color="b",
+    label="short_queue",
+)
+plt.plot(
+    mid_queue_quantiles["total_return_time"],
+    mid_queue_quantiles["quantiles"],
+    color="r",
+    label="mid_queue",
+)
+plt.plot(
+    long_queue_quantiles["total_return_time"],
+    long_queue_quantiles["quantiles"],
+    color="k",
+    label="long_queue",
+)
 plt.legend()
-plt.xlabel('Return Time')
-plt.ylabel('Quantile')
+plt.xlabel("Return Time")
+plt.ylabel("Quantile")
 plt.show()
 ```
 
@@ -174,16 +194,8 @@ plt.show()
 ```python
 # Merge into one table
 quantiles = short_queue_quantiles.merge(
-        mid_queue_quantiles,
-        on='quantiles',
-        how='inner',
-        suffixes=('_short', None)
-    ).merge(
-        long_queue_quantiles,
-        on='quantiles',
-        how='inner',
-        suffixes=('_mid', '_long')
-    )
+    mid_queue_quantiles, on="quantiles", how="inner", suffixes=("_short", None)
+).merge(long_queue_quantiles, on="quantiles", how="inner", suffixes=("_mid", "_long"))
 quantiles
 ```
 
@@ -303,17 +315,37 @@ quantiles
 
 
 ```python
-short_mid_delta_mean = abs((quantiles['total_return_time_short'] - quantiles['total_return_time_mid']).mean())
-short_mid_delta_median = abs((quantiles['total_return_time_short'] - quantiles['total_return_time_mid']).median())
-short_mid_delta_max= (quantiles['total_return_time_short'] - quantiles['total_return_time_mid']).abs().max()
-short_mid_delta_min= (quantiles['total_return_time_short'] - quantiles['total_return_time_mid']).abs().min()
+short_mid_delta_mean = abs(
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_mid"]).mean()
+)
+short_mid_delta_median = abs(
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_mid"]).median()
+)
+short_mid_delta_max = (
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_mid"])
+    .abs()
+    .max()
+)
+short_mid_delta_min = (
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_mid"])
+    .abs()
+    .min()
+)
 
 actual = abs(MID_QUEUE_TIME - SHORT_QUEUE_TIME)
 print(f"Actual delta between short and mid queues: {actual} minutes.")
-print(f"Mean delta between short and mid queues: {round(short_mid_delta_mean, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_mean)/actual*100, 2)}%.")
-print(f"Median delta between short and mid queues: {round(short_mid_delta_median, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_median)/actual*100,2)}%.")
-print(f"Max delta between short and mid queues: {round(short_mid_delta_max, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_max)/actual*100,2)}%.")
-print(f"Min delta between short and mid queues: {round(short_mid_delta_min, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_min)/actual*100,2)}%.")
+print(
+    f"Mean delta between short and mid queues: {round(short_mid_delta_mean, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_mean) / actual * 100, 2)}%."
+)
+print(
+    f"Median delta between short and mid queues: {round(short_mid_delta_median, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_median) / actual * 100, 2)}%."
+)
+print(
+    f"Max delta between short and mid queues: {round(short_mid_delta_max, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_max) / actual * 100, 2)}%."
+)
+print(
+    f"Min delta between short and mid queues: {round(short_mid_delta_min, 2)} minutes. Percentage error: {round(abs(actual - short_mid_delta_min) / actual * 100, 2)}%."
+)
 ```
 
     Actual delta between short and mid queues: 30 minutes.
@@ -325,18 +357,37 @@ print(f"Min delta between short and mid queues: {round(short_mid_delta_min, 2)} 
 
 
 ```python
-mid_long_delta_mean = abs((quantiles['total_return_time_mid'] - quantiles['total_return_time_long']).mean())
-mid_long_delta_median = abs((quantiles['total_return_time_mid'] - quantiles['total_return_time_long']).median())
-mid_long_delta_max= (quantiles['total_return_time_mid'] - quantiles['total_return_time_long']).abs().max()
-mid_long_delta_min= (quantiles['total_return_time_mid'] - quantiles['total_return_time_long']).abs().min()
+mid_long_delta_mean = abs(
+    (quantiles["total_return_time_mid"] - quantiles["total_return_time_long"]).mean()
+)
+mid_long_delta_median = abs(
+    (quantiles["total_return_time_mid"] - quantiles["total_return_time_long"]).median()
+)
+mid_long_delta_max = (
+    (quantiles["total_return_time_mid"] - quantiles["total_return_time_long"])
+    .abs()
+    .max()
+)
+mid_long_delta_min = (
+    (quantiles["total_return_time_mid"] - quantiles["total_return_time_long"])
+    .abs()
+    .min()
+)
 
 actual = abs(LONG_QUEUE_TIME - MID_QUEUE_TIME)
 print(f"Actual delta between mid and long queues: {actual} minutes.")
-print(f"Mean delta between mid and long queues: {round(mid_long_delta_mean, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_mean)/actual*100, 2)}%.")
-print(f"Median delta between mid and long queues: {round(mid_long_delta_median, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_median)/actual*100, 2)}%.")
-print(f"Max delta between mid and long queues: {round(mid_long_delta_max, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_max)/actual*100, 2)}%.")
-print(f"Min delta between mid and long queues: {round(mid_long_delta_min, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_min)/actual*100, 2)}%.")
-
+print(
+    f"Mean delta between mid and long queues: {round(mid_long_delta_mean, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_mean) / actual * 100, 2)}%."
+)
+print(
+    f"Median delta between mid and long queues: {round(mid_long_delta_median, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_median) / actual * 100, 2)}%."
+)
+print(
+    f"Max delta between mid and long queues: {round(mid_long_delta_max, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_max) / actual * 100, 2)}%."
+)
+print(
+    f"Min delta between mid and long queues: {round(mid_long_delta_min, 2)} minutes. Percentage error: {round(abs(actual - mid_long_delta_min) / actual * 100, 2)}%."
+)
 ```
 
     Actual delta between mid and long queues: 45 minutes.
@@ -348,18 +399,39 @@ print(f"Min delta between mid and long queues: {round(mid_long_delta_min, 2)} mi
 
 
 ```python
-short_long_delta_mean = abs((quantiles['total_return_time_short'] - quantiles['total_return_time_long']).mean())
-short_long_delta_median = abs((quantiles['total_return_time_short'] - quantiles['total_return_time_long']).median())
-short_long_delta_max= (quantiles['total_return_time_short'] - quantiles['total_return_time_long']).abs().max()
-short_long_delta_min= (quantiles['total_return_time_short'] - quantiles['total_return_time_long']).abs().min()
+short_long_delta_mean = abs(
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_long"]).mean()
+)
+short_long_delta_median = abs(
+    (
+        quantiles["total_return_time_short"] - quantiles["total_return_time_long"]
+    ).median()
+)
+short_long_delta_max = (
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_long"])
+    .abs()
+    .max()
+)
+short_long_delta_min = (
+    (quantiles["total_return_time_short"] - quantiles["total_return_time_long"])
+    .abs()
+    .min()
+)
 
 actual = abs(LONG_QUEUE_TIME - SHORT_QUEUE_TIME)
 print(f"Actual delta between short and long queues: {actual} minutes.")
-print(f"Mean delta between short and long queues: {round(short_long_delta_mean, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_mean)/actual*100, 2)}%.")
-print(f"Median delta between short and long queues: {round(short_long_delta_median, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_median)/actual*100,2)}%.")
-print(f"Max delta between short and long queues: {round(short_long_delta_max, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_max)/actual*100,2)}%.")
-print(f"Min delta between short and long queues: {round(short_long_delta_min, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_min)/actual*100,2)}%.")
-
+print(
+    f"Mean delta between short and long queues: {round(short_long_delta_mean, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_mean) / actual * 100, 2)}%."
+)
+print(
+    f"Median delta between short and long queues: {round(short_long_delta_median, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_median) / actual * 100, 2)}%."
+)
+print(
+    f"Max delta between short and long queues: {round(short_long_delta_max, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_max) / actual * 100, 2)}%."
+)
+print(
+    f"Min delta between short and long queues: {round(short_long_delta_min, 2)} minutes. Percentage error: {round(abs(actual - short_long_delta_min) / actual * 100, 2)}%."
+)
 ```
 
     Actual delta between short and long queues: 75 minutes.
