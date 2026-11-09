@@ -1,0 +1,43 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v6.0.0"
+    hooks:
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-toml
+      - id: check-yaml
+      - id: check-json
+        # VS Code settings.json is JSONC (allows // comments) and Jupyter
+        # notebooks have their own validators — exclude both from strict JSON.
+        exclude: '\.ipynb$|^\.vscode/'
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
+
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        stages: [pre-commit]
+        language: system
+        entry: uv run ruff format
+        types: [python]
+        files: ^(lib|tests)/
+      - id: ruff-check
+        name: ruff check
+        stages: [pre-commit]
+        language: system
+        entry: uv run ruff check --fix
+        types: [python]
+        files: ^(lib|tests)/
+      - id: pytest
+        name: pytest
+        stages: [pre-push]
+        language: system
+        entry: uv run pytest
+        types: [python]
+        pass_filenames: false

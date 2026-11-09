@@ -1,0 +1,47 @@
+{
+  // Debug configurations for this project.
+  // Press F5 with one of these selected in the Run and Debug sidebar.
+  // Requires the Microsoft Python extension (ms-python.python), which bundles debugpy.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Debug current file",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Pytest: Debug current test file",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["--no-cov", "${file}", "-v"],
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Pytest: Debug all tests",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["--no-cov", "tests/", "-v"],
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Pytest: Debug test under cursor",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["--no-cov", "${file}::${selectedText}", "-v"],
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

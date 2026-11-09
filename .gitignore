@@ -1,0 +1,75 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+# Note: deliberately NOT ignoring `lib/` / `lib64/` here (the usual Python
+# .gitignore template does) — `lib/` is this project's actual source package,
+# not a venv-internal directory.
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environments
+.env
+.envrc
+.venv/
+env/
+venv/
+ENV/
+
+# Ruff
+.ruff_cache/
+
+# IDEs
+.idea/
+# Note: .vscode/ is committed for shared editor settings.
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Data — folders kept via .gitkeep, contents never committed
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Experiment tracking / misc local outputs
+mlruns/
+outputs/

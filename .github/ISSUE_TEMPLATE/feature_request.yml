@@ -1,0 +1,81 @@
+name: ✨ Feature request
+description: Propose a new feature, capability, or other enhancement.
+title: "feat: <short description of the feature>"
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest an improvement.
+
+        Before opening, please:
+        - Search [existing issues](../issues) to avoid duplicates.
+        - Check [`CONTRIBUTING.md`](../blob/main/CONTRIBUTING.md) for the project's conventions.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What problem are you trying to solve? Who benefits?
+      placeholder: |
+        Consumers currently have to reimplement a common helper ad-hoc; a
+        first-class API would remove the duplication.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: A clear description of what you'd like to see added or changed.
+      placeholder: |
+        Add a `Widget` class under `lib/`.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Type of feature
+      options:
+        - New module / subpackage
+        - Framework / core change
+        - Tooling / CI / DX improvement
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API / usage (optional)
+      description: Sketch how a consumer would use this. Skip if not applicable.
+      placeholder: |
+        ```python
+        from lib import something
+        result = something(...)
+        ```
+      render: markdown
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What workarounds exist today? Why aren't they sufficient?
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to similar implementations elsewhere, design docs, or relevant background.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I have searched existing issues and confirmed this is not a duplicate.
+          required: true
+        - label: I am willing to discuss scope and design before implementation begins.
+          required: false
